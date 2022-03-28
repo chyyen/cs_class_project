@@ -5,8 +5,8 @@ direction = [(-1,0), (1,0), (0,-1), (0,1), (-1,1), (-1,-1), (1,1), (1,-1)]
 
 def generateMap(row, column, mine_number) :
 	# create grids
-	width = 800//row
-	gap = (1600-width*column)//2
+	width = 800//row # grid width 
+	gap = (1600-width*column)//2 # blank space of left and right side
 	grids = []	
 	for i in range(row) :
 		grids.append([])

@@ -1,6 +1,7 @@
 from generator import direction
 
 
+# check wheater coor out of range
 def check_valid(x_range, y_range, x, y) :
 	return x >= 0 and x < x_range and y >= 0 and y < y_range
 
@@ -8,7 +9,7 @@ def check_valid(x_range, y_range, x, y) :
 def bfs(grids, x_range, y_range, start_x, start_y) :
 	que = [] # simulate queue
 	queue_idx = 0
-	updated = []
+	updated = [] # grids being flipped 
 
 	grids[start_x][start_y].flip()
 	updated.append((start_x, start_y))
