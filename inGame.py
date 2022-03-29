@@ -135,7 +135,7 @@ def runGame(row_size, col_size, bomb_num) :
 		pygame.display.flip()
 
 	# end game
-	if remain :
+	if not check_no_bomb(updated, grids) : :
 		sound.play() # play juju sama's subbing sound if lose
 	endPage = pygame.Surface((1600,1000)) # a new surface to show text
 	endPage.fill((255, 255, 255))
