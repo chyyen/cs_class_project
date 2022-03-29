@@ -32,7 +32,7 @@ def initGrid(row, column) :
 	# show way to return to menu
 	font = pygame.font.Font('fonts/ComicRelief.ttf', 30) 
 	text = font.render("Press esc to return to menu", True, (0,0,0))
-	mainWindow.blit(text, (10, 1570))
+	mainWindow.blit(text, (10, 10))
 
 	pygame.display.flip()
 
