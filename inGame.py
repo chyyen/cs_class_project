@@ -1,5 +1,6 @@
 import pygame
 from pygame.locals import *
+from datetime import datetime
 from generator import generateMap
 from bfs import bfs
 from init import mainWindow, sound
@@ -86,6 +87,20 @@ def check_no_bomb(last_flipped, grids) :
 	return True
 
 
+def update_time(period) :
+	global mainWindow
+	if period < 0 : # new day 
+		period += 24*60*60
+	cover = pygame.Surface((400, 50)) # a new surface to show current time
+	cover.fill((255,255,255))
+	mainWindow.blit(cover, (0, 0))
+	font = pygame.font.Font('fonts/ComicRelief.ttf', 30) 
+	text = font.render(f"Time : {period//60}min {period%60}sec", True, (0,0,0)) # text showimg current time
+	rect = text.get_rect(left=10, top=10)
+	mainWindow.blit(text, rect)
+		
+
+
 def runGame(row_size, col_size, bomb_num) :
 	global mainWindow, width, gap
 
@@ -94,10 +109,12 @@ def runGame(row_size, col_size, bomb_num) :
 
 	updated = [] # grids that are changed
 	remain = row_size*col_size-bomb_num # remaing grid without bomb
+	start_time = datetime.today().hour*3600+datetime.today().minute*60+datetime.today().second # use to compute current play time
 
 	# initialize the grids
 	initGrid(row_size, col_size)
 	show_bomb_num(bomb_num)
+	update_time(datetime.today().hour*3600+datetime.today().minute*60+datetime.today().second-start_time) 
 	
 	# main part of game
 	while check_no_bomb(updated, grids) and remain :
@@ -130,12 +147,13 @@ def runGame(row_size, col_size, bomb_num) :
 						elif not grids[y][x].marked :
 							bomb_num += 1
 		drawGrid(grids,row_size, updated) # update surfaces (flip, add tag to grid)
+		update_time(datetime.today().hour*3600+datetime.today().minute*60+datetime.today().second-start_time)
 		if len(updated) > 0 :
 			show_bomb_num(bomb_num)
 		pygame.display.flip()
 
 	# end game
-	if not check_no_bomb(updated, grids) : :
+	if not check_no_bomb(updated, grids) :
 		sound.play() # play juju sama's subbing sound if lose
 	endPage = pygame.Surface((1600,1000)) # a new surface to show text
 	endPage.fill((255, 255, 255))
