@@ -7,7 +7,7 @@ class Grid(Sprite) :
 		# (x_coor, y_coor) : coordinate of left top
 		# width : width of the grid
 		# adj_bomb : number of bombs that are adjacent to the grid
-		# {unflipped, flipped, flag, mark}_sur : surface showed when the it is true
+		# {unflipped, flipped, flag, mark}_sur : surface showed when it is true
 		super(Grid, self).__init__()
 		self.rect = Rect(x_coor, y_coor, width, width)
 		self.width = width
