@@ -61,7 +61,6 @@ def runGame(row_size, col_size, bomb_num) :
 	initGrid(row_size, col_size)
 	show_bomb_num(bomb_num)
 
-	updated = [] # grids that are changed
 	remain = row_size*col_size-bomb_num # remaing grid without bomb
 	start_time = datetime.today().hour*3600+datetime.today().minute*60+datetime.today().second # use to compute current play time
 	update_time(datetime.today().hour*3600+datetime.today().minute*60+datetime.today().second-start_time) 
