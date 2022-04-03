@@ -12,7 +12,6 @@ gap = int(0) # blank space of left and right side
 
 def initGrid(row, column) :
 	global mainWindow, width, gap
-	mainWindow.fill((255,255,255))
 
 	# build vertical lines
 	for i in range(column+1) :
@@ -24,49 +23,6 @@ def initGrid(row, column) :
 		line = pygame.Rect(gap, 100+i*width, width*column+1, 2)
 		pygame.draw.rect(mainWindow, (0, 0, 0), line)
 
-	# draw image to grids
-	img = pygame.image.load(f'imgs/size_{row}/cover.jpg')
-	for i in range(row) :
-		for j in range(column) :
-			mainWindow.blit(img, (gap+j*width+2, 100+i*width+2))
-
-	# show way to return to menu
-	font = pygame.font.Font('fonts/ComicRelief.ttf', 30) 
-	text = font.render("Press esc to return to menu", True, (0,0,0))
-	mainWindow.blit(text, (10, 950))
-
-	pygame.display.flip()
-
-
-# draw grid
-def drawGrid(grids, row, updated_grids) :
-	global mainWindow, width, gap
-	# draw grid content	
-	for r,c in updated_grids :
-		grid = grids[r][c]
-		if grid.flipped == False : # add (or cancel) tag
-			img = pygame.image.load(f'imgs/size_{row}/cover.jpg')
-			mainWindow.blit(img, (grid.x_coor, grid.y_coor))
-			if grid.flag == True : # tag is flag
-				img = pygame.image.load(f'imgs/size_{row}/flag.png')
-				mainWindow.blit(img, (grid.x_coor, grid.y_coor))
-			elif grid.marked == True : # tag is question mark
-				img = pygame.image.load(f'imgs/size_{row}/Qmark.png')
-				mainWindow.blit(img, (grid.x_coor, grid.y_coor))
-		else : # flip
-			whiteBG = pygame.Surface((width-2, width-2)) # draw grid to white
-			whiteBG.fill((255, 255, 255))
-			whiteBG.set_alpha(180)
-			mainWindow.blit(whiteBG, (grid.x_coor, grid.y_coor))
-			if grid.adj_bomb > 0 : # draw the number of adjacent bombs
-				font = pygame.font.Font('fonts/ComicRelief.ttf', width//2)
-				num = font.render(f'{grid.adj_bomb}', True, (0,0,0))
-				rect = num.get_rect(center=((2*grid.x_coor+width)//2, (2*grid.y_coor+width)//2))
-				mainWindow.blit(num, rect)
-			if grid.adj_bomb == -1 : # there's a bomb
-				img = pygame.image.load(f'imgs/size_{row}/bomb.png')
-				mainWindow.blit(img, (grid.x_coor, grid.y_coor))
-
 
 def show_bomb_num(num) :
 	global mainWindow
@@ -77,14 +33,6 @@ def show_bomb_num(num) :
 	text = font.render(f"Remaining bombs : {num}", True, (0,0,0)) # text showimg remaining bombs
 	rect = text.get_rect(right=1590, bottom=990)
 	mainWindow.blit(text, rect)
-
-
-# check wheather there are bomb flipped
-def check_no_bomb(last_flipped, grids) :
-	for x,y in last_flipped :
-		if grids[x][y].adj_bomb == -1 and grids[x][y].flipped == True :
-			return False
-	return True
 
 
 def update_time(period) :
@@ -104,21 +52,26 @@ def update_time(period) :
 def runGame(row_size, col_size, bomb_num) :
 	global mainWindow, width, gap
 
+	mainWindow.fill((255, 255, 255))
+	 
 	# generate map
 	grids, width, gap = generateMap(row_size, col_size, bomb_num)
-
-	updated = [] # grids that are changed
-	remain = row_size*col_size-bomb_num # remaing grid without bomb
-	start_time = datetime.today().hour*3600+datetime.today().minute*60+datetime.today().second # use to compute current play time
 
 	# initialize the grids
 	initGrid(row_size, col_size)
 	show_bomb_num(bomb_num)
+
+	updated = [] # grids that are changed
+	remain = row_size*col_size-bomb_num # remaing grid without bomb
+	start_time = datetime.today().hour*3600+datetime.today().minute*60+datetime.today().second # use to compute current play time
 	update_time(datetime.today().hour*3600+datetime.today().minute*60+datetime.today().second-start_time) 
 	
+	pygame.display.flip()
+
+	boom = False # wheather flip a bomb
+
 	# main part of game
-	while check_no_bomb(updated, grids) and remain :
-		updated = []
+	while (not boom) and remain :
 		# iterate through the events 
 		for event in pygame.event.get() :
 			if event.type == QUIT : # end game directly
@@ -134,26 +87,28 @@ def runGame(row_size, col_size, bomb_num) :
 				# left click
 				if event.button == 1 : 
 					# use bfs to update grid's state
-					if y >= 0 and y < row_size and x >= 0 and x < col_size and grids[y][x].flipped == False and grids[y][x].flag == False and grids[y][x].marked == False:
-						updated = bfs(grids, row_size, col_size , y, x) 
-						remain -= len(updated)
+					if y >= 0 and y < row_size and x >= 0 and x < col_size and grids[y][x].flipped == False and grids[y][x].flag == False and grids[y][x].mark == False :
+						flipped_num, res = bfs(grids, row_size, col_size , y, x) # return (the number of girds be flipped, the number of grids that is tagged and flipped)
+						if res == -1 : # flip a bomb
+							boom = True 
+						else :
+							bomb_num += res
+						remain -= flipped_num
 				# right click
 				else : 
 					if y >= 0 and y < row_size and x >= 0 and x < col_size and grids[y][x].flipped == False:
-						grids[y][x].add_tag()
-						updated = [(y,x)]
+						grids[y][x].change_tag()
 						if grids[y][x].flag == True : # use to show the number of bomb that haven't been flagged 
 							bomb_num -= 1
-						elif not grids[y][x].marked :
+						elif not grids[y][x].mark :
 							bomb_num += 1
-		drawGrid(grids,row_size, updated) # update surfaces (flip, add tag to grid)
 		update_time(datetime.today().hour*3600+datetime.today().minute*60+datetime.today().second-start_time)
-		if len(updated) > 0 :
-			show_bomb_num(bomb_num)
+		show_bomb_num(bomb_num)
 		pygame.display.flip()
 
 	# end game
-	if not check_no_bomb(updated, grids) :
+	# show a text to imform player, and wait player to exit
+	if boom :
 		sound.play() # play juju sama's subbing sound if lose
 	endPage = pygame.Surface((1600,1000)) # a new surface to show text
 	endPage.fill((255, 255, 255))
