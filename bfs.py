@@ -9,10 +9,14 @@ def check_valid(x_range, y_range, x, y) :
 def bfs(grids, x_range, y_range, start_x, start_y) :
 	que = [] # simulate queue
 	queue_idx = 0
-	updated = [] # grids being flipped 
+	tagged_num = 0 # the number of grids that is tagged and flipped
+	flipped_num = 0 # the number of grids be flipped
 
-	grids[start_x][start_y].flip()
-	updated.append((start_x, start_y))
+	tagged_num += grids[start_x][start_y].flip()
+	flipped_num += 1
+	if tagged_num == -1 : # flip a bomb
+		return (0,-1)
+
 	if(grids[start_x][start_y].adj_bomb == 0) :
 		que.append((start_x,start_y))
 
@@ -23,9 +27,9 @@ def bfs(grids, x_range, y_range, start_x, start_y) :
 		for xx,yy in direction : 
 			adj_x, adj_y = cur_x+xx, cur_y+yy
 			if check_valid(x_range, y_range, adj_x, adj_y) and grids[adj_x][adj_y].flipped == False :
-				grids[adj_x][adj_y].flip() # flip up the grid
-				updated.append((adj_x, adj_y))
+				tagged_num += grids[adj_x][adj_y].flip() # flip up the grid
+				flipped_num += 1
 				if grids[adj_x][adj_y].adj_bomb == 0 : # if the grid has no adjancy bombs, push into queue
 					que.append((adj_x, adj_y))
-			
-	return updated
+
+	return (flipped_num, tagged_num)
