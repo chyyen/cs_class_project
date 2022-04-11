@@ -1,4 +1,5 @@
 from model import Grid
+from init import mainWindow
 import pygame
 import random
 
@@ -29,12 +30,12 @@ def generateMap(row, column, mine_number) :
 	width = 800//row # grid width 
 	gap = (1600-width*column)//2 # blank space of left and right side
 	grids = []
+	no_adj_bomb = [] # grids that have no adjacent bomb
 	unflipped_img = pygame.image.load(f'imgs/size_{row}/cover.jpg') # for unflipped_sur
 	bomb_img = pygame.image.load(f'imgs/size_{row}/bomb.png') # for flipped_sur
 	flag_img = pygame.image.load(f'imgs/size_{row}/flag.png') # for flag_sur
 	mark_img = pygame.image.load(f'imgs/size_{row}/Qmark.png') # for mark_sur
 	font = pygame.font.Font('fonts/ComicRelief.ttf', width//2) # set text font showing adjacent bombs number
-
 	for i in range(row) :
 		grids.append([])
 		for j in range(column) :
@@ -47,7 +48,13 @@ def generateMap(row, column, mine_number) :
 				text = font.render(f"{adj_bomb_num[i][j]}", True, (0,0,0))
 				rec = text.get_rect(center=(width//2-1, width//2-1))
 				flipped_img.blit(text, rec)
+			else :
+				no_adj_bomb.append((i,j))
 			grids[i].append(Grid(gap+j*width+2, 100+i*width+2, width-2, adj_bomb_num[i][j], unflipped_img, flipped_img, flag_img, mark_img))
-	
+	# randomly mark a grid that has no adjacent bomb for the hint of first step
+	random.shuffle(no_adj_bomb)
+	x,y = no_adj_bomb[0]
+	pygame.draw.rect(mainWindow, (236, 112, 99), grids[x][y].rect)
+
 	return (grids, width, gap)
 		
