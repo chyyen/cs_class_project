@@ -45,9 +45,7 @@ def generateMap(row, column, mine_number) :
 			if adj_bomb_num[i][j] == -1 :
 				flipped_img = bomb_img
 			elif adj_bomb_num[i][j] != 0 :
-				text = font.render(f"{adj_bomb_num[i][j]}", True, (0,0,0))
-				rec = text.get_rect(center=(width//2-1, width//2-1))
-				flipped_img.blit(text, rec)
+				flipped_img = font.render(f"{adj_bomb_num[i][j]}", True, (0,0,0))
 			else :
 				no_adj_bomb.append((i,j))
 			grids[i].append(Grid(gap+j*width+2, 100+i*width+2, width-2, adj_bomb_num[i][j], unflipped_img, flipped_img, flag_img, mark_img))

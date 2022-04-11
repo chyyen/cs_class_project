@@ -1,7 +1,8 @@
-from time import sleep
 import pygame
 from pygame.locals import *
+from time import sleep
 from datetime import datetime
+from sys import exit
 from generator import generateMap
 from bfs import bfs
 from init import mainWindow, sound

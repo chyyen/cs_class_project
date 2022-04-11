@@ -1,3 +1,4 @@
+from pygame.surface import Surface
 from pygame.rect import Rect
 from pygame.sprite import Sprite
 from init import mainWindow
@@ -7,7 +8,7 @@ class Grid(Sprite) :
 		# (x_coor, y_coor) : coordinate of left top
 		# width : width of the grid
 		# adj_bomb : number of bombs that are adjacent to the grid
-		# {unflipped, flipped, flag, mark}_sur : surface showed when it is true
+		# {unflipped, flipped, flag, mark}_sur : surface showed when the it is true
 		super(Grid, self).__init__()
 		self.rect = Rect(x_coor, y_coor, width, width)
 		self.width = width
@@ -30,7 +31,11 @@ class Grid(Sprite) :
 			has_tagged = -1
 		self.flag = False
 		self.mark = False
-		mainWindow.blit(self.flipped_sur, self.rect)
+		cover = Surface((self.width, self.width)) 
+		cover.fill((255,255,255))
+		cover.set_alpha(180)
+		mainWindow.blit(cover, self.rect) # set a white background first
+		mainWindow.blit(self.flipped_sur, self.flipped_sur.get_rect(center=self.rect.center))
 		return has_tagged
 
 	def change_tag(self) :
