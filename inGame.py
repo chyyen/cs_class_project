@@ -1,3 +1,4 @@
+from time import sleep
 import pygame
 from pygame.locals import *
 from datetime import datetime
@@ -109,6 +110,7 @@ def runGame(row_size, col_size, bomb_num) :
 	# show a text to imform player, and wait player to exit
 	if boom :
 		sound.play() # play juju sama's subbing sound if lose
+		sleep(0.7)
 	endPage = pygame.Surface((1600,1000)) # a new surface to show text
 	endPage.fill((255, 255, 255))
 	endPage.set_alpha(180)
