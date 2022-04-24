@@ -12,7 +12,7 @@ def bfs(grids, x_range, y_range, start_x, start_y) :
 	tagged_num = 0 # the number of grids that is tagged and flipped
 	flipped_num = 0 # the number of grids be flipped
 
-	tagged_num += grids[start_x][start_y].flip()
+	tagged_num += grids[start_x][start_y].flip() # return 1 if the grid has been tageed, -1 if the grid has bomb , 0 otherwise
 	flipped_num += 1
 	if tagged_num == -1 : # flip a bomb
 		return (0,-1)
