@@ -10,7 +10,7 @@ def drawMenuPage() :
 
 	# show game difficulty options
 	_8to8 = font60.render('Press 1 to enter a 8*8 map (with 10 mines)', True, (0,0,0))
-	_16to16 = font60.render('Press 2 to enter a 16*16 map (with 10 mines)', True, (0,0,0))
+	_16to16 = font60.render('Press 2 to enter a 16*16 map (with 50 mines)', True, (0,0,0))
 	_16to30 = font60.render('Press 3 to enter a 16*30 map (with 99 mines)', True, (0,0,0))
 	_quit = font60.render('Press esc to quit the game', True, (0,0,0))
 	
